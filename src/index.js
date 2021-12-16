@@ -4,13 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const app = express();
 
 app.use(express.json());
-
-/**
- * cpf ‒ string
- * name ‒ string
- * id ‒ uuid
- * statement ‒ array
- */
+// app.use(verifyExistingAccountByCPF);
 
 const customers = [];
 
@@ -36,7 +30,17 @@ app.post("/account", (req, res) => {
   return res.status(201).json(account);
 });
 
-app.get("/account/:cpf/statement", (req, res) => {
+app.get("/account/statement", verifyExistingAccountByCPF, (req, res) => {
+  const { statement } = req.account;
+
+  return res.json(statement);
+});
+
+app.listen(3333);
+
+// Middlewares
+
+function verifyExistingAccountByCPF(req, res, next) {
   const { cpf } = req.headers;
 
   const account = customers.find((customer) => customer.cpf == cpf);
@@ -44,7 +48,7 @@ app.get("/account/:cpf/statement", (req, res) => {
   if (!account)
     return res.status(400).send("There is no account under the given CPF");
 
-  return res.json(account.statement);
-});
+  req.account = account;
 
-app.listen(3333);
+  next();
+}
