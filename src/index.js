@@ -17,18 +17,21 @@ const customers = [];
 app.post("/account", (req, res) => {
   const { cpf, name } = req.body;
 
-  const id = uuidv4();
+  const existingCpf = customers.some((customer) => customer.cpf == cpf);
+
+  if (existingCpf)
+    return res.status(400).json({
+      error: "An account under that CPF exists",
+    });
 
   const account = {
     cpf,
     name,
-    id,
+    id: uuidv4(),
     statement: [],
   };
 
   customers.push(account);
-
-  console.log(customers);
 
   return res.status(201).send();
 });
