@@ -33,7 +33,18 @@ app.post("/account", (req, res) => {
 
   customers.push(account);
 
-  return res.status(201).send();
+  return res.status(201).json(account);
+});
+
+app.get("/account/:cpf/statement", (req, res) => {
+  const { cpf } = req.headers;
+
+  const account = customers.find((customer) => customer.cpf == cpf);
+
+  if (!account)
+    return res.status(400).send("There is no account under the given CPF");
+
+  return res.json(account.statement);
 });
 
 app.listen(3333);
