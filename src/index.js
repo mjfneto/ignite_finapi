@@ -31,13 +31,23 @@ app.post("/account", (req, res) => {
 });
 
 app.post("/account/transaction", verifyExistingAccountByCPF, (req, res) => {
-  const transaction = req.body;
-  const account = req.account;
+  const { type, value, ...transaction } = req.body;
+  const { statement } = req.account;
 
-  account.statement.push({
+  const balance = getBalance(statement);
+
+  if (type == "debit") {
+    if (balance < value || statement.length == 0)
+      return res.status(403).json({
+        error: "Insufficient funds",
+      });
+  }
+
+  statement.push({
     ...transaction,
+    value,
     createdAt: new Date(),
-    type: "credit",
+    type,
   });
 
   res.status(201).send();
@@ -64,4 +74,12 @@ function verifyExistingAccountByCPF(req, res, next) {
   req.account = account;
 
   next();
+}
+
+// Utils
+
+function getBalance(statement) {
+  return statement.reduce((total, { type, value }) => {
+    return type == "debit" ? total - value : total + value;
+  }, 0);
 }
