@@ -30,6 +30,19 @@ app.post("/account", (req, res) => {
   return res.status(201).json(account);
 });
 
+app.post("/account/transaction", verifyExistingAccountByCPF, (req, res) => {
+  const transaction = req.body;
+  const account = req.account;
+
+  account.statement.push({
+    ...transaction,
+    createdAt: new Date(),
+    type: "credit",
+  });
+
+  res.status(201).send();
+});
+
 app.get("/account/statement", verifyExistingAccountByCPF, (req, res) => {
   const { statement } = req.account;
 
