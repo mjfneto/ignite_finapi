@@ -1,5 +1,4 @@
 const express = require("express");
-const createApplication = require("express/lib/express");
 const { v4: uuidv4 } = require("uuid");
 
 const app = express();
