@@ -53,6 +53,12 @@ app.post("/account/transaction", verifyExistingAccountByCPF, (req, res) => {
   res.status(201).send();
 });
 
+app.get("/account", verifyExistingAccountByCPF, (req, res) => {
+  const { account } = req;
+
+  return res.json(account);
+});
+
 app.get("/account/statement", verifyExistingAccountByCPF, (req, res) => {
   const { statement } = req.account;
 
@@ -66,6 +72,15 @@ app.get("/account/statement/date", verifyExistingAccountByCPF, (req, res) => {
   const results = queryByDate(statement, query);
 
   return res.json(results);
+});
+
+app.put("/account/update/", verifyExistingAccountByCPF, (req, res) => {
+  const { name } = req.body;
+  const { account } = req;
+
+  account.name = name;
+
+  return res.status(201).send();
 });
 
 app.listen(3333);
