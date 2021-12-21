@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 // app.use(verifyExistingAccountByCPF);
 
-const customers = [];
+let customers = [];
 
 app.post("/account", (req, res) => {
   const { cpf, name } = req.body;
@@ -57,6 +57,14 @@ app.get("/account", verifyExistingAccountByCPF, (req, res) => {
   const { account } = req;
 
   return res.json(account);
+});
+
+app.delete("/account", verifyExistingAccountByCPF, (req, res) => {
+  const { account } = req;
+
+  customers = customers.filter(({ cpf }) => account.cpf !== cpf);
+
+  return res.status(200).send();
 });
 
 app.get("/account/statement", verifyExistingAccountByCPF, (req, res) => {
