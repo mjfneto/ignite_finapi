@@ -68,6 +68,15 @@ app.get("/account/statement/date", verifyExistingAccountByCPF, (req, res) => {
   return res.json(results);
 });
 
+app.put("/account/update/", verifyExistingAccountByCPF, (req, res) => {
+  const { name } = req.body;
+  const { account } = req;
+
+  account.name = name;
+
+  return res.status(201).send();
+});
+
 app.listen(3333);
 
 // Middlewares
