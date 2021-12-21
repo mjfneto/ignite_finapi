@@ -53,6 +53,12 @@ app.post("/account/transaction", verifyExistingAccountByCPF, (req, res) => {
   res.status(201).send();
 });
 
+app.get("/account", verifyExistingAccountByCPF, (req, res) => {
+  const { account } = req;
+
+  return res.json(account);
+});
+
 app.get("/account/statement", verifyExistingAccountByCPF, (req, res) => {
   const { statement } = req.account;
 
