@@ -1,4 +1,5 @@
 const express = require("express");
+const createApplication = require("express/lib/express");
 const { v4: uuidv4 } = require("uuid");
 
 const app = express();
@@ -59,6 +60,15 @@ app.get("/account/statement", verifyExistingAccountByCPF, (req, res) => {
   return res.json(statement);
 });
 
+app.get("/account/statement/date", verifyExistingAccountByCPF, (req, res) => {
+  const query = req.query;
+  const { statement } = req.account;
+
+  const results = queryByDate(statement, query);
+
+  return res.json(results);
+});
+
 app.listen(3333);
 
 // Middlewares
@@ -82,4 +92,18 @@ function getBalance(statement) {
   return statement.reduce((total, { type, value }) => {
     return type == "debit" ? total - value : total + value;
   }, 0);
+}
+
+function queryByDate(statement, query) {
+  return statement.filter(({ createdAt }) => {
+    const day = createdAt.getDate();
+    const month = createdAt.getMonth() + 1;
+    const year = createdAt.getFullYear();
+
+    return (
+      day == Number(query.day) &&
+      month == Number(query.month) &&
+      year == Number(query.year)
+    );
+  });
 }
