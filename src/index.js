@@ -54,9 +54,16 @@ app.post("/account/transaction", verifyExistingAccountByCPF, (req, res) => {
 });
 
 app.get("/account", verifyExistingAccountByCPF, (req, res) => {
-  const { account } = req;
+  const { statement, ...account } = req.account;
+  const balance = getBalance(statement);
 
-  return res.json(account);
+  return res.json({
+    ...account,
+    statement: {
+      transactions: statement,
+      balance,
+    },
+  });
 });
 
 app.delete("/account", verifyExistingAccountByCPF, (req, res) => {
@@ -70,7 +77,9 @@ app.delete("/account", verifyExistingAccountByCPF, (req, res) => {
 app.get("/account/statement", verifyExistingAccountByCPF, (req, res) => {
   const { statement } = req.account;
 
-  return res.json(statement);
+  const balance = getBalance(statement);
+
+  return res.json({ statement, balance });
 });
 
 app.get("/account/statement/date", verifyExistingAccountByCPF, (req, res) => {
